@@ -81,13 +81,13 @@ def create_article_trajectory_graph(revisions, directed=True):
     g = nx.Graph()
 
   for i in range(len(revisions)):
-    if weighted:
-        if g.has_edge(revisions[i]['user'], revisions[i-1]['user']):
-            g[revisions[i]['user']][revisions[i-1]['user']]['weight'] += 1
-        else:
-            g.add_edge(revisions[i]['user'], revisions[i-1]['user'], weight=1)
-    else:
-        g.add_edge(revisions[i]['user'], revisions[i-1]['user'])
+    # if weighted:
+    #     if g.has_edge(revisions[i]['user'], revisions[i-1]['user']):
+    #         g[revisions[i]['user']][revisions[i-1]['user']]['weight'] += 1
+    #     else:
+    #         g.add_edge(revisions[i]['user'], revisions[i-1]['user'], weight=1)
+    # else:
+    g.add_edge(revisions[i]['user'], revisions[i-1]['user'])
 
   return g
 
