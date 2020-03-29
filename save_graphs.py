@@ -114,5 +114,5 @@ for title in titles:
 with open('./data/directed_network_dictionary.pkl', 'wb') as f:
    pickle.dump(directed_graphs, f)
 
-with open('./data/undirected_network_dictionary.pdk', 'wb') as f:
+with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
    pickle.dump(undirected_graphs, f)
