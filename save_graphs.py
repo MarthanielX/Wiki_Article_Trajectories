@@ -99,12 +99,13 @@ with open('./data/class_lists_final.pkl', 'rb') as f:
   lsts = pickle.load(f)
 
 titles = [item for sublist in lsts for item in sublist]
-assert(len(lst) == 6000)
+assert(len(titles) == 6000)
 
 directed_graphs = {}
 undirected_graphs = {}
 
 for title in titles:
+    print(title)
     revisions = get_article_revisions(title)
     directed_graphs[title] = create_article_trajectory_graph(revisions, directed=True, weighted=True)
     undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
