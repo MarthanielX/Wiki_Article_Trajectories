@@ -52,11 +52,14 @@ def get_article_revisions(title):
 
         # for every page, (there should always be only one) get its revisions:
         for page in pages.keys():
-            query_revisions = pages[page]["revisions"]
+            if (revisions in pages[page]):
+                query_revisions = pages[page]["revisions"]
 
-            # Append every revision to the revisions list
-            for rev in query_revisions:
-                revisions.append(rev)
+                # Append every revision to the revisions list
+                for rev in query_revisions:
+                    revisions.append(rev)
+            else:
+
 
         # 'continue' tells us there's more revisions to add
         if 'continue' in api_answer:
@@ -104,15 +107,16 @@ assert(len(titles) == 6000)
 directed_graphs = {}
 undirected_graphs = {}
 
-for title in titles:
-    print(title)
-    revisions = get_article_revisions(title)
-    directed_graphs[title] = create_article_trajectory_graph(revisions, directed=True, weighted=True)
-    undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
+for i in range(len(titles)):
+    title = titles[i]
+    print(i, title)
+    if (title not in directed_graphs or title not in undirected_graphs):
+        revisions = get_article_revisions(title)
+        directed_graphs[title] = create_article_trajectory_graph(revisions, directed=True, weighted=True)
+        undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
 
+    with open('./data/directed_network_dictionary.pkl', 'wb') as f:
+       pickle.dump(directed_graphs, f)
 
-with open('./data/directed_network_dictionary.pkl', 'wb') as f:
-   pickle.dump(directed_graphs, f)
-
-with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
-   pickle.dump(undirected_graphs, f)
+    with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
+       pickle.dump(undirected_graphs, f)
