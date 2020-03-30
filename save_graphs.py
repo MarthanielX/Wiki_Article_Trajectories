@@ -52,14 +52,12 @@ def get_article_revisions(title):
 
         # for every page, (there should always be only one) get its revisions:
         for page in pages.keys():
-            if (revisions in pages[page]):
+            if ('revisions' in pages[page]):
                 query_revisions = pages[page]["revisions"]
 
                 # Append every revision to the revisions list
                 for rev in query_revisions:
                     revisions.append(rev)
-            else:
-                break
 
         # 'continue' tells us there's more revisions to add
         if 'continue' in api_answer:
@@ -67,6 +65,8 @@ def get_article_revisions(title):
             # api_answer dictionary.
             title_parameters.update(api_answer['continue'])
             # list_parameters.update(api_answer['continue'])
+        else:
+            break
 
     for r in revisions:
       if 'anon' in r:
@@ -81,8 +81,6 @@ def create_article_trajectory_graph(revisions, directed=True, weighted=False):
     g = nx.DiGraph()
   else:
     g = nx.Graph()
-
-  edge_weights = []
 
   for i in range(len(revisions)):
     if weighted:
@@ -102,16 +100,17 @@ with open('./data/class_lists_final.pkl', 'rb') as f:
 titles = [item for sublist in lsts for item in sublist]
 assert(len(titles) == 6000)
 
+# replace with laod from file if necessary
 directed_graphs = {}
 undirected_graphs = {}
 
 for i in range(len(titles)):
     title = titles[i]
     print(i, title)
-    if (title not in directed_graphs or title not in undirected_graphs):
-        revisions = get_article_revisions(title)
-        directed_graphs[title] = create_article_trajectory_graph(revisions, directed=True, weighted=True)
-        undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
+    #if (title not in directed_graphs or title not in undirected_graphs):
+    revisions = get_article_revisions(title)
+    directed_graphs[title] = create_article_trajectory_graph(revisions, directed=True, weighted=True)
+    undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
 
     with open('./data/directed_network_dictionary.pkl', 'wb') as f:
        pickle.dump(directed_graphs, f)
