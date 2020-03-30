@@ -59,7 +59,7 @@ def get_article_revisions(title):
                 for rev in query_revisions:
                     revisions.append(rev)
             else:
-
+                break
 
         # 'continue' tells us there's more revisions to add
         if 'continue' in api_answer:
@@ -67,8 +67,6 @@ def get_article_revisions(title):
             # api_answer dictionary.
             title_parameters.update(api_answer['continue'])
             # list_parameters.update(api_answer['continue'])
-        else:
-            break
 
     for r in revisions:
       if 'anon' in r:
