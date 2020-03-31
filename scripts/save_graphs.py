@@ -94,7 +94,7 @@ def create_article_trajectory_graph(revisions, directed=True, weighted=False):
 
   return g
 
-with open('./data/class_lists_final.pkl', 'rb') as f:
+with open('./data/class_lists.pkl', 'rb') as f:
   lsts = pickle.load(f)
 
 titles = [item for sublist in lsts for item in sublist]
