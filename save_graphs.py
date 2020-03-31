@@ -113,7 +113,7 @@ for i in range(len(titles)):
     title = titles[i]
     print(i, title)
     #if (title not in directed_graphs or title not in undirected_graphs):
-    if (title not in undirected_graphs):
+    if (title not in directed_graphs):
         revisions = get_article_revisions(title)
         directed_graphs[title] = create_article_trajectory_graph(revisions, directed=True, weighted=True)
     # undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
