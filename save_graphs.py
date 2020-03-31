@@ -103,8 +103,8 @@ assert(len(titles) == 6000)
 with open('./data/directed_network_dictionary.pkl', 'rb') as f:
    directed_graphs = pickle.load(f)
 
-with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
-   undirected_graphs = pickle.load(f)
+# with open('./data/undirected_network_dictionary.pkl', 'rb') as f:
+#    undirected_graphs = pickle.load(f)
 
 #directed_graphs = {}
 #undirected_graphs = {}
@@ -115,10 +115,10 @@ for i in range(len(titles)):
     #if (title not in directed_graphs or title not in undirected_graphs):
     revisions = get_article_revisions(title)
     directed_graphs[title] = create_article_trajectory_graph(revisions, directed=True, weighted=True)
-    undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
+    # undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
 
 with open('./data/directed_network_dictionary.pkl', 'wb') as f:
    pickle.dump(directed_graphs, f)
 
-with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
-   pickle.dump(undirected_graphs, f)
+# with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
+#    pickle.dump(undirected_graphs, f)
