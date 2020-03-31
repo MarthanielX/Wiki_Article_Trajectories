@@ -100,9 +100,14 @@ with open('./data/class_lists_final.pkl', 'rb') as f:
 titles = [item for sublist in lsts for item in sublist]
 assert(len(titles) == 6000)
 
-# replace with laod from file if necessary
-directed_graphs = {}
-undirected_graphs = {}
+with open('./data/directed_network_dictionary.pkl', 'rb') as f:
+   directed_graphs = pickle.load(f)
+
+with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
+   undirected_graphs = pickle.load(f)
+
+#directed_graphs = {}
+#undirected_graphs = {}
 
 for i in range(len(titles)):
     title = titles[i]
@@ -112,8 +117,8 @@ for i in range(len(titles)):
     directed_graphs[title] = create_article_trajectory_graph(revisions, directed=True, weighted=True)
     undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
 
-    with open('./data/directed_network_dictionary.pkl', 'wb') as f:
-       pickle.dump(directed_graphs, f)
+with open('./data/directed_network_dictionary.pkl', 'wb') as f:
+   pickle.dump(directed_graphs, f)
 
-    with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
-       pickle.dump(undirected_graphs, f)
+with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
+   pickle.dump(undirected_graphs, f)
