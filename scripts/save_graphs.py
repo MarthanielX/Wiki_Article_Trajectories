@@ -18,21 +18,13 @@ import math
 
 """# Graph Creation Functions"""
 
-def get_article_revisions(title):
+def get_article_revisions(title, class_index):
     revisions = []
     # create a base url for the api and then a normal url which is initially
     # just a copy of it
     # The following line is what the requests call is doing, basically.
     # "http://en.wikipedia.org/w/api.php/?action=query&titles={0}&prop=revisions&rvprop=flags|timestamp|user|size|ids&rvlimit=500&format=json&continue=".format(title)
     wp_api_url = "http://en.wikipedia.org/w/api.php/"
-
-    # list_parameters = {'action' : 'query',
-    #               'generator' : 'allpages',
-    #               'prop' : 'pageassessments',
-    #               'rvprop' : 'flags|timestamp|user|size|ids',
-    #               'rvlimit' : 500,
-    #               'format' : 'json',
-    #               'continue' : ''}
 
     title_parameters = {'action' : 'query',
                   'titles' : title,
@@ -52,12 +44,19 @@ def get_article_revisions(title):
 
         # for every page, (there should always be only one) get its revisions:
         for page in pages.keys():
-            if ('revisions' in pages[page]):
+            if ('revisions' in pages[page]): #
                 query_revisions = pages[page]["revisions"]
 
                 # Append every revision to the revisions list
                 for rev in query_revisions:
                     revisions.append(rev)
+
+            else:
+            # means article has been deleted
+            # find a new article in class, return that article's revisions
+                new_title = find_article_in_class()
+                return get_article_revisions(new_title, class_index)
+                # find new article
 
         # 'continue' tells us there's more revisions to add
         if 'continue' in api_answer:
@@ -74,52 +73,79 @@ def get_article_revisions(title):
       if 'userhidden' in r:
         r['user'] = "Hidden"
 
-    return(revisions)
+    return (title, revisions)
 
-def create_article_trajectory_graph(revisions, directed=True, weighted=False):
-  if directed:
-    g = nx.DiGraph()
-  else:
-    g = nx.Graph()
+def create_article_trajectory_graph(revisions):
+  g = nx.DiGraph()
 
   for i in range(len(revisions)):
-    if weighted:
-        if g.has_edge(revisions[i]['user'], revisions[i-1]['user']):
-            g[revisions[i]['user']][revisions[i-1]['user']]['count'] += 1
-        else:
-            g.add_edge(revisions[i]['user'], revisions[i-1]['user'])
-            g[revisions[i]['user']][revisions[i-1]['user']]['count'] = 1
+    if g.has_edge(revisions[i]['user'], revisions[i-1]['user']):
+      g[revisions[i]['user']][revisions[i-1]['user']]['count'] += 1
     else:
-        g.add_edge(revisions[i]['user'], revisions[i-1]['user'])
+      g.add_edge(revisions[i]['user'], revisions[i-1]['user'])
+      g[revisions[i]['user']][revisions[i-1]['user']]['count'] = 1
 
   return g
 
-with open('./data/class_lists.pkl', 'rb') as f:
-  lsts = pickle.load(f)
+def find_article_in_class(class_index):
+    S = requests.Session()
+    URL = "https://en.wikipedia.org/w/api.php"
+    PARAMS_RAND = {
+        "action" : "query",
+        "generator" : "random",
+        "grnnamespace" : 0,
+        "prop" : "pageassessments",
+        "grnlimit" : 1,
+        "format" : "json"
+    }
+    while True:
+        R = S.get(url = URL, params=PARAMS_RAND)
+        DATA = R.json()
 
-titles = [item for sublist in lsts for item in sublist]
-assert(len(titles) == 6000)
+        generated_pages = []
+        PAGES = DATA['query']['pages']
+        for page in PAGES:
+            if 'pageassessments' in PAGES[page]:
+                category = list(PAGES[page]['pageassessments'].keys())[0]
+                ranking = PAGES[page]['pageassessments'][category]['class']
+                generated_pages.append((PAGES[page]['title'], ranking))
 
-with open('./data/directed_network_dictionary.pkl', 'rb') as f:
-   directed_graphs = pickle.load(f)
+        for page in generated_pages:
+            if page[1] == classes[class_index] and (page[0] not in lsts[class_index]) and not len(lsts[class_index]) == 1000 :
+
+                return page[0]
+
+#titles = [item for sublist in lsts for item in sublist]
+#assert(len(titles) == 6000)
+
+#with open('./data/directed_network_dictionary.pkl', 'rb') as f:
+#   directed_graphs = pickle.load(f)
 
 # with open('./data/undirected_network_dictionary.pkl', 'rb') as f:
 #    undirected_graphs = pickle.load(f)
 
-#directed_graphs = {}
-#undirected_graphs = {}
+classes = ['FA', 'GA', 'B', 'C', 'ST', 'SB']
+with open('./data/class_lists.pkl', 'rb') as f:
+  lsts = pickle.load(f)
 
-for i in range(len(titles)):
-    title = titles[i]
-    print(i, title)
-    #if (title not in directed_graphs or title not in undirected_graphs):
-    if (title not in directed_graphs):
-        revisions = get_article_revisions(title)
-        directed_graphs[title] = create_article_trajectory_graph(revisions, directed=True, weighted=True)
-    # undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
+for i in range(len(classes)):
+    graph_dict = {}
+    revision_dict = {}
+    titles = lsts[i]
+    for j in range(len(titles)):
+        title = titles[j]
+        print(j, title)
+        #if (title not in directed_graphs or title not in undirected_graphs):
+        #if (title not in directed_graphs):
+        new_title, revisions = get_article_revisions(title)
 
-with open('./data/directed_network_dictionary.pkl', 'wb') as f:
-   pickle.dump(directed_graphs, f)
+        revision_dict[new_title] = revisions
+        graph_dict[new_title] = create_article_trajectory_graph(revisions)
+        # undirected_graphs[title] = create_article_trajectory_graph(revisions, directed=False, weighted=True)
 
-# with open('./data/undirected_network_dictionary.pkl', 'wb') as f:
-#    pickle.dump(undirected_graphs, f)
+    # possibly need to change the file paths:
+    with open('./graph_dictionary_{}.pkl'.format(classes[i]), 'wb') as f:
+       pickle.dump(graph_dict, f)
+
+    with open('./revision_dictionary_{}.pkl'.format(classes[i]), 'wb') as f:
+       pickle.dump(revision_dict, f)
