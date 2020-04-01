@@ -134,10 +134,11 @@ for i in range(len(classes)):
     titles = lsts[i]
     for j in range(len(titles)):
         title = titles[j]
-        print(j, title)
+        print(i, j, title)
         #if (title not in directed_graphs or title not in undirected_graphs):
         #if (title not in directed_graphs):
-        new_title, revisions = get_article_revisions(title)
+        new_title, revisions = get_article_revisions(title, i)
+        lsts[i][j] = new_title
 
         revision_dict[new_title] = revisions
         graph_dict[new_title] = create_article_trajectory_graph(revisions)
@@ -148,4 +149,10 @@ for i in range(len(classes)):
        pickle.dump(graph_dict, f)
 
     with open('./revision_dictionary_{}.pkl'.format(classes[i]), 'wb') as f:
-       pickle.dump(revision_dict, f)
+       pickle.dump(revision_dict, f)   
+
+    with open('./article_titles_{}.pkl'.format(classes[i]), 'wb') as f:
+       pickle.dump(lsts[i], f)   
+
+with open ('./article_titles_all.pkl', 'wb') as f:
+    pickle.dump(lsts, f)
