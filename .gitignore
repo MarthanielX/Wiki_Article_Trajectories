@@ -1,1 +1,3 @@
-/data/directed_network_dictionary.pkl
+/data-old/directed_network_dictionary.pkl
+/data/graph_dictionary_*
+/data/revision_dictionary_*
