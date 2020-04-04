@@ -31,7 +31,8 @@ def average_betweenness(g):
 
 def create_article_row(title):
   print(title)
-  graph = directed_graphs[title]
+  revisions = revision_dict[title]
+  graph = graph_dict[title]
   return (
     title,
     class_dict(title),
@@ -41,7 +42,7 @@ def create_article_row(title):
     average_betweenness(graph),
     len(revisions), #num edits
     len(graph), #num editors
-    #revisions[0]['size'] #article length in bytes
+    revisions[0]['size'] #article length in bytes
   )
 
 def construct_dataframe(article_titles):
@@ -51,7 +52,10 @@ def construct_dataframe(article_titles):
                                        'edit count', 'editor count']).set_index('title')
 
 with open('../data/directed_network_dictionary.pkl', 'rb') as f:
-  directed_graphs = pickle.load(f)
+  graph_dict = pickle.load(f)
+
+with open('../data/revision_dictionary_all.pkl', 'rb') as f:
+  revision_dict = pickle.load(f)
 
 with open('../data/class_dict.pkl', 'rb') as f:
   class_dict = pickle.load(f)
