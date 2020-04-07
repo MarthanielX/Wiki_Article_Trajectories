@@ -31,34 +31,22 @@ def average_betweenness(g):
 
 def create_article_row(title):
   print(title)
-  revisions = revision_dict[title]
-  graph = graph_dict[title]
+  graph = graph_dict[title].to_undirected()
   return (
     title,
-    class_dict[title],
     diameter(graph),
     average_closeness(graph),
     average_clustering(graph),
-    average_betweenness(graph),
-    len(revisions), #num edits
-    len(graph), #num editors
-    revisions[0]['size'] #article length in bytes
+    average_betweenness(graph)
   )
 
 def construct_dataframe(article_titles):
   rows = [create_article_row(title) for title in article_titles]
-  return pd.DataFrame(rows, columns = ['title', 'class', 'diameter', 'closeness',
-                                       'clustering', 'betweenness',
-                                       'edit count', 'editor count']).set_index('title')
+  return pd.DataFrame(rows, columns = ['title', 'diameter', 'closeness',
+                                       'clustering', 'betweenness']).set_index('title')
 
 with open('../data/graph_dictionary_all.pkl', 'rb') as f:
   graph_dict = pickle.load(f)
-
-with open('../data/revision_dictionary_all.pkl', 'rb') as f:
-  revision_dict = pickle.load(f)
-
-with open('../data/class_dictionary.pkl', 'rb') as f:
-  class_dict = pickle.load(f)
 
 with open('../data/article_titles_all.pkl', 'rb') as f:
   class_lists = pickle.load(f)
@@ -67,5 +55,5 @@ titles = [item for sublist in class_lists for item in sublist]
 
 df = construct_dataframe(titles)
 
-with open('../data/df_directed_stats_original.pkl', 'wb') as f:
+with open('../data/df_undirected_stats_original.pkl', 'wb') as f:
    pickle.dump(df, f)
