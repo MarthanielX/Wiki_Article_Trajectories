@@ -29,8 +29,9 @@ def average_clustering(g):
 def average_betweenness(g):
   return statistics.mean(nx.networkx.algorithms.centrality.betweenness_centrality(g).values())
 
-def create_article_row(title):
-  print(title)
+def create_article_row(index):
+  title = titles[index]
+  print(index, title)
   revisions = revision_dict[title]
   graph = graph_dict[title]
   return (
@@ -46,10 +47,10 @@ def create_article_row(title):
   )
 
 def construct_dataframe(article_titles):
-  rows = [create_article_row(title) for title in article_titles]
+  rows = [create_article_row(i) for i in range(len(article_titles))]
   return pd.DataFrame(rows, columns = ['title', 'class', 'diameter', 'closeness',
                                        'clustering', 'betweenness',
-                                       'edit count', 'editor count']).set_index('title')
+                                       'edit count', 'editor count', 'article size']).set_index('title')
 
 with open('../data/graph_dictionary_all.pkl', 'rb') as f:
   graph_dict = pickle.load(f)
