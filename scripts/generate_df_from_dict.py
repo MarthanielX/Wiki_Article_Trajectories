@@ -25,7 +25,7 @@ def diameter(g, w=None):
   return max([x for x in dicts.values()])
 
 def average_closeness(g, w=None):
-  return statistics.mean(nx.algorithms.centrality.closeness_centrality(g, weight=w).values())
+  return statistics.mean(nx.algorithms.centrality.closeness_centrality(g, distance=w).values())
 
 def average_clustering(g, w=None):
   return statistics.mean(nx.algorithms.cluster.clustering(g, weight=w).values())
@@ -34,7 +34,7 @@ def average_betweenness(g, w=None):
   return statistics.mean(nx.networkx.algorithms.centrality.betweenness_centrality(g, weight=w).values())
 
 """ Network Stats 2 """
-density = nx.classes.function.density(g)
+density = nx.classes.function.density
 
 radius = nx.algorithms.distance_measures.radius
 
@@ -69,7 +69,7 @@ def create_article_row(index, stat_names, directed):
   if not directed:
     graph = graph.to_undirected()
 
-  return (title, *(stat_functions[stat](graph) for stat in stat_functions))
+  return (title, *(stat_functions[stat](graph) for stat in stat_names))
 
 def construct_dataframe(article_titles, stat_names, directed):
   return pd.DataFrame(
@@ -84,11 +84,13 @@ with open('../data/graph_dictionary_all.pkl', 'rb') as f:
 with open('../data/article_titles_all.pkl', 'rb') as f:
   class_lists = pickle.load(f)
 
+stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness']
+stats2 = ['density', 'radius', 'avg eccentricity', 'm', 'global clustering']
+
 titles = [item for sublist in class_lists for item in sublist]
-stats = ['density', 'radius', 'avg eccentricity', 'm', 'global_clustering']
 dir = True
 
-df = construct_dataframe(titles, stats, dir)
+df = construct_dataframe(titles, stats2, dir)
 
 with open('../data/df_directed_stats2.pkl', 'wb') as f:
   pickle.dump(df, f)
