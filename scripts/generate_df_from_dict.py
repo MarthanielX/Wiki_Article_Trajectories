@@ -88,9 +88,9 @@ stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness']
 stats2 = ['density', 'radius', 'avg eccentricity', 'm', 'global clustering']
 
 titles = [item for sublist in class_lists for item in sublist]
-dir = True
+dir = False
 
 df = construct_dataframe(titles, stats2, dir)
 
-with open('../data/df_directed_stats2.pkl', 'wb') as f:
+with open('../data/df_undirected_stats2.pkl', 'wb') as f:
   pickle.dump(df, f)
