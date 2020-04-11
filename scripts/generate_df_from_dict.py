@@ -46,6 +46,20 @@ def number_of_edges(g):
 
 global_clustering = nx.algorithms.cluster.transitivity
 
+""" Network Stats 3 """
+# the following 3 stats do not accept weights or directed graphs
+
+def smallworld_omega(g):
+  return nx.algorithms.smallworld.omega(g.to_undirected)
+
+def smallworld_sigma(g):
+  return nx.algorithms.smallworld.sigma(g.to_undirected)
+
+node_connectivity = nx.algorithms.connectivity.connectivity.node_connectivity
+
+# this stat admits directed graphs but not edge weights
+edge_connectivity = nx.algorithms.connectivity.connectivity.edge_connectivity
+
 """# Data Frame Constrution"""
 
 stat_functions = {
@@ -57,7 +71,11 @@ stat_functions = {
   'radius' : radius,
   'avg eccentricity' : average_eccentricity,
   'm' : number_of_edges,
-  'global clustering' : global_clustering
+  'global clustering' : global_clustering,
+  'smallworld omega': smallworld_omega,
+  'smallworld sigma': smallworld_sigma,
+  'node connectivity': node_connectivity,
+  'edge connectivity': edges_connectivity
 }
 
 # cannot do anything that requires the revision history
@@ -86,11 +104,12 @@ with open('../data/article_titles_all.pkl', 'rb') as f:
 
 stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness']
 stats2 = ['density', 'radius', 'avg eccentricity', 'm', 'global clustering']
+stats3 = ['smallworld omega', 'smallworld sigma', 'node connectivity', 'edge connectivity']
 
 titles = [item for sublist in class_lists for item in sublist]
 dir = False
 
-df = construct_dataframe(titles, stats2, dir)
+df = construct_dataframe(titles, stats3, dir)
 
-with open('../data/df_undirected_stats2.pkl', 'wb') as f:
+with open('../data/df_undirected_stats3.pkl', 'wb') as f:
   pickle.dump(df, f)
