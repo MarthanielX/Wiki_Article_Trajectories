@@ -19,32 +19,33 @@ import math
 """ Original Network Stats """
 
 def get_eccentricities(g, weighted=False):
-  w = none
+  w = None
   if (weighted):
     w = "length"
-  dicts = nx.algorithms.shortest_paths.weighted.all_pairs_dijkstra_path_length(g,weight=w).values()
+  dicts = [x[1] for x in list(nx.algorithms.shortest_paths.weighted.all_pairs_dijkstra_path_length(g,weight=w))]
   return [max(d.values()) for d in dicts]
 
 def diameter(g, weighted=False):
   if (not weighted):
     return nx.algorithms.distance_measures.diameter(g)
-  dicts = nx.algorithms.shortest_paths.weighted.all_pairs_dijkstra_path_length(g,weight=w).values()
-  return max([x for x in dicts.values()])
+  w = "length"
+  dicts = [x[1] for x in list(nx.algorithms.shortest_paths.weighted.all_pairs_dijkstra_path_length(g,weight=w))]
+  return max([max(d.values()) for d in dicts])
 
 def average_closeness(g, weighted=False):
-  w = none
+  w = None
   if (weighted):
     w = "length"
   return statistics.mean(nx.algorithms.centrality.closeness_centrality(g, distance=w).values())
 
 def average_clustering(g, weighted=False):
-  w = none
+  w = None
   if (weighted):
     w = "strength"
   return statistics.mean(nx.algorithms.cluster.clustering(g, weight=w).values())
 
 def average_betweenness(g, weighted=False):
-  w = none
+  w = None
   if (weighted):
     w = "length"
   return statistics.mean(nx.networkx.algorithms.centrality.betweenness_centrality(g, weight=w).values())
@@ -146,10 +147,10 @@ stats_connectivity = ['node connectivity', 'edge connectivity']
 weighted_stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness', 'radius', 'avg eccentricity']
 
 titles = [item for sublist in class_lists for item in sublist]
-dir = False
+directed = False
 weighted = True
 
-df = construct_dataframe(titles, weighted_stats, dir, weighted)
+df = construct_dataframe(titles, weighted_stats1, directed, weighted)
 
-with open('../data/df_directed_stats_log_weighted1.pkl', 'wb') as f:
+with open('../data/df_undirected_stats_log_weighted1.pkl', 'wb') as f:
   pickle.dump(df, f)
