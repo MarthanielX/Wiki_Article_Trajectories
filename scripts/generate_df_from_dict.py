@@ -12,6 +12,7 @@ import requests
 import json
 import matplotlib.pyplot as plt
 import statistics
+
 import pandas as pd
 import pickle
 import math
@@ -67,6 +68,7 @@ def number_of_edges(g):
   return len(g.edges)
 
 global_clustering = nx.algorithms.cluster.transitivity
+
 
 """ Network Stats 3 """
 # the following 3 stats do not accept weights or directed graphs
@@ -125,7 +127,7 @@ def create_article_row(index, stat_names, directed, weighted):
   if (weighted):
     graph = get_log_weighted_graph(graph, directed=directed)
 
-  return (title, *(stat_functions[stat](graph, weighted=weighted) for stat in stat_names))
+  return (title, *(stat_functions[stat](graph) for stat in stat_names))
 
 def construct_dataframe(article_titles, stat_names, directed, weighted):
   return pd.DataFrame(
@@ -134,10 +136,10 @@ def construct_dataframe(article_titles, stat_names, directed, weighted):
 
 """ Main Method Section """
 
-with open('../data/graph_dictionary_all.pkl', 'rb') as f:
+with open('../data/random5000_articles_graph.pkl', 'rb') as f:
   graph_dict = pickle.load(f)
 
-with open('../data/article_titles_all.pkl', 'rb') as f:
+with open('../data/random5000_article_titles.pkl', 'rb') as f:
   class_lists = pickle.load(f)
 
 stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness']
@@ -147,10 +149,10 @@ stats_connectivity = ['node connectivity', 'edge connectivity']
 weighted_stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness', 'radius', 'avg eccentricity']
 
 titles = [item for sublist in class_lists for item in sublist]
-directed = False
-weighted = True
+directed = True
+weighted = False
 
-df = construct_dataframe(titles, weighted_stats1, directed, weighted)
+df = construct_dataframe(titles, stats1 + stats2 + stats_connectivity, directed, weighted)
 
-with open('../data/df_undirected_stats_log_weighted1.pkl', 'wb') as f:
+with open('../data/df_directed_stats_random_sample.pkl', 'wb') as f:
   pickle.dump(df, f)
