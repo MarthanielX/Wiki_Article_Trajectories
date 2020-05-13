@@ -100,6 +100,35 @@ def get_log_weighted_graph(input_graph, directed=True):
 
   return g
 
+ def get_n_weighted_graph(input_graph, directed=True):
+   if (directed):
+     g = nx.DiGraph()
+     for u, v, count in list(input_graph.edges.data("count")):
+       g.add_edge(u, v, strength= count, length= 1/count )
+
+   else:
+     g = nx.Graph()
+     for u, v, count in list(input_graph.edges.data("count")):
+       transpose_count = input_graph[v][u]["count"]
+       g.add_edge(u, v, strength= count + transpose_count, length= 1/ (count + transpose_count) )
+
+   return g
+
+def get_sqrtn_weighted_graph(input_graph, directed=True):
+  if (directed):
+    g = nx.DiGraph()
+    for u, v, count in list(input_graph.edges.data("count")):
+      g.add_edge(u, v, strength= count**(1/2), length= (1/count**(1/2)) )
+
+  else:
+    g = nx.Graph()
+    for u, v, count in list(input_graph.edges.data("count")):
+      transpose_count = input_graph[v][u]["count"]
+      g.add_edge(u, v, strength= (count + transpose_count)**(1/2), length= (1/(count + transpose_count)**(1/2)) )
+
+  return g
+
+
 stat_functions = {
   'diameter': diameter,
   'closeness' : average_closeness,
@@ -124,8 +153,12 @@ def create_article_row(index, stat_names, directed, weighted):
   graph = graph_dict[title]
   if not directed:
     graph = graph.to_undirected()
-  if (weighted):
+  if (weighted == 'log'):
     graph = get_log_weighted_graph(graph, directed=directed)
+  if (weighted == 'n'):
+    graph = get_n_weighted_graph(graph, directed=directed)
+  if (weighted == 'sqrtn'):
+    graph = get_sqrtn_weighted_graph(graph, directed=directed)
 
   return (title, *(stat_functions[stat](graph) for stat in stat_names))
 
