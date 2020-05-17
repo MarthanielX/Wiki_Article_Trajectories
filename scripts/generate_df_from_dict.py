@@ -64,7 +64,7 @@ def average_eccentricity(g, weighted=False):
     return statistics.mean( nx.algorithms.distance_measures.eccentricity(g).values() )
   return statistics.mean(get_eccentricities(g, weighted=True))
 
-def number_of_edges(g):
+def number_of_edges(input_graph):
   if (weighted):
     total = 0
     for u, v, count in list(input_graph.edges.data("count")):
@@ -96,13 +96,13 @@ def get_log_weighted_graph(input_graph, directed=True):
   if (directed):
     g = nx.DiGraph()
     for u, v, count in list(input_graph.edges.data("count")):
-      g.add_edge(u, v, strength= math.log2(count), length= (1/(math.log2(1+count))) )
+      g.add_edge(u, v, strength= math.log2(1+count), length= (1/(math.log2(1+count))) )
 
   else:
     g = nx.Graph()
     for u, v, count in list(input_graph.edges.data("count")):
       transpose_count = input_graph[v][u]["count"]
-      g.add_edge(u, v, strength= math.log2(count + transpose_count), length= (1/(math.log2(1+ count + transpose_count))) )
+      g.add_edge(u, v, strength= math.log2(1+ count + transpose_count), length= (1/(math.log2(1+ count + transpose_count))) )
 
   return g
 
@@ -185,13 +185,13 @@ stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness']
 stats2 = ['density', 'radius', 'avg eccentricity', 'm', 'global clustering']
 stats_smallworld = ['smallworld omega', 'smallworld sigma']
 stats_connectivity = ['node connectivity', 'edge connectivity']
-weighted_stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness', 'radius', 'avg eccentricity', '']
+weighted_stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness', 'radius', 'avg eccentricity']
 
 titles = [item for sublist in class_lists for item in sublist]
-directed = True
-weighted = False
+directed = False
+weighted = 'n'
 
 df = construct_dataframe(titles, weighted_stats1, directed, weighted)
 
-with open('../data/df_undirected_n_weighted_stat1.pkl', 'wb') as f:
+with open('../data/df_undirected_n_weighted_stats1.pkl', 'wb') as f:
   pickle.dump(df, f)
