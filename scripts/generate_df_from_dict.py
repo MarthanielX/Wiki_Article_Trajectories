@@ -163,7 +163,7 @@ def create_article_row(index, stat_names, directed, weighted):
     graph = get_log_weighted_graph(graph, directed=directed)
   if (weighted == 'n'):
     graph = get_n_weighted_graph(graph, directed=directed)
-  if (weighted == 'sqrtn'):
+  if (weighted == 'sqrt'):
     graph = get_sqrtn_weighted_graph(graph, directed=directed)
 
   return (title, *(stat_functions[stat](graph) for stat in stat_names))
@@ -180,6 +180,13 @@ with open('../data/graph_dictionary_all.pkl', 'rb') as f:
 
 with open('../data/article_titles_all.pkl', 'rb') as f:
   class_lists = pickle.load(f)
+   
+#with open('../data/random5000_article_graphs.pkl', 'rb') as f:
+#  graph_dict = pickle.load(f)
+
+#with open('../data/random5000_article_titles.pkl', 'rb') as f:
+#  class_lists = pickle.load(f)
+
 
 stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness']
 stats2 = ['density', 'radius', 'avg eccentricity', 'm', 'global clustering']
@@ -189,9 +196,9 @@ weighted_stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness', 'ra
 
 titles = [item for sublist in class_lists for item in sublist]
 directed = False
-weighted = 'n'
+weighted = 'log'
 
 df = construct_dataframe(titles, weighted_stats1, directed, weighted)
 
-with open('../data/df_undirected_n_weighted_stats1.pkl', 'wb') as f:
+with open('../data/df_log_weighted_stats1.pkl', 'wb') as f:
   pickle.dump(df, f)
