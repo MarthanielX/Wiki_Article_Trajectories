@@ -71,7 +71,7 @@ def number_of_edges(input_graph):
       total += count
     return total
 
-  return len(g.edges)
+  return len(input_graph.edges)
 
 global_clustering = nx.algorithms.cluster.transitivity
 
@@ -175,10 +175,10 @@ def construct_dataframe(article_titles, stat_names, directed, weighted):
 
 """ Main Method Section """
 
-with open('../data/graph_dictionary_all.pkl', 'rb') as f:
+with open('../data/random5000_article_graphs.pkl', 'rb') as f:
   graph_dict = pickle.load(f)
 
-with open('../data/article_titles_all.pkl', 'rb') as f:
+with open('../data/random5000_article_titles.pkl', 'rb') as f:
   class_lists = pickle.load(f)
    
 #with open('../data/random5000_article_graphs.pkl', 'rb') as f:
@@ -196,9 +196,9 @@ weighted_stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness', 'ra
 
 titles = [item for sublist in class_lists for item in sublist]
 directed = False
-weighted = 'log'
+weighted = False
 
-df = construct_dataframe(titles, weighted_stats1, directed, weighted)
+df = construct_dataframe(titles, stats1+stats2, directed, weighted)
 
-with open('../data/df_log_weighted_stats1.pkl', 'wb') as f:
+with open('../data/df_undirected_stats_random5000.pkl', 'wb') as f:
   pickle.dump(df, f)
