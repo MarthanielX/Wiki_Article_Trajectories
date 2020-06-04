@@ -20,25 +20,29 @@ def get_edit_count_list(title):
 
 def construct_row(title):
 
-    ["T5 Avg Count", "T10 Avg Count", "T5% Avg Count", "T10% Avg Count", "Count>5", "Count>10"]
+    ["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
     counts = get_edit_count_list(title)
     lst = [title,]
 
     n = len(counts)
-    lst.append( statistics.mean(counts[:min(n, 5)]))
-    lst.append( statistics.mean(counts[:min(n, 10)]))
 
-    lst.append( statistics.mean(counts[: max(n//20, 1) ]))
-    lst.append( statistics.mean(counts[: max(n//10, 1) ]))
+    lst.append( statistics.mean(counts[:min(n, 8)]))
+    lst.append( statistics.mean(counts[:min(n, 12)]))
+    lst.append( statistics.mean(counts[:min(n, 15)]))
 
-    lst.append( len([x for x in counts if x >= 5]) )
-    lst.append( len([x for x in counts if x >= 10]) )
+    #lst.append( statistics.mean(counts[: max(n//20, 1) ]))
+    #lst.append( statistics.mean(counts[: max(n//10, 1) ]))
+
+    lst.append( len([x for x in counts if x >= 2]) )
+    lst.append( len([x for x in counts if x >= 4]) )
+    lst.append( len([x for x in counts if x >= 7]) )
 
     return lst
 
 def construct_dataframe(titles):
 
-    cols = ["T5 Avg Count", "T10 Avg Count", "T5% Avg Count", "T10% Avg Count", "Count>5", "Count>10"]
+    #cols = ["T5 Avg Count", "T10 Avg Count", "T5% Avg Count", "T10% Avg Count", "Count>5", "Count>10"]
+    cols = ["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
     row_lst = []
     for i, title in enumerate(titles):
         print(i, title)
@@ -56,5 +60,5 @@ with open('../data/revision_dictionary_all.pkl', 'rb') as f:
 
 df = construct_dataframe(titles)
 
-with open('../data/df_edit_count_stats.pkl', 'wb') as f:
+with open('../data/df_edit_count_stats2.pkl', 'wb') as f:
     pickle.dump(df, f)
