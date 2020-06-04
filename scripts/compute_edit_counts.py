@@ -1,16 +1,17 @@
 import pandas as pd
 import pickle
 import math
+import statistics
 
 def get_edit_count_list(title):
-    hist = revision_dict[title]
+    revisions = revision_dict[title]
     counts = {}
 
     for i in range(len(revisions)):
         if revisions[i]['user'] in counts:
             counts[ revisions[i]['user'] ] = counts[ revisions[i]['user'] ] + 1
         else:
-            counts[ revisions[i]['user'] = 1
+            counts[ revisions[i]['user'] ] = 1
 
 
     lst = list(counts.values())
@@ -21,16 +22,17 @@ def construct_row(title):
 
     ["T5 Avg Count", "T10 Avg Count", "T5% Avg Count", "T10% Avg Count", "Count>5", "Count>10"]
     counts = get_edit_count_list(title)
-    lst = []
+    lst = [title,]
 
+    n = len(counts)
     lst.append( statistics.mean(counts[:min(n, 5)]))
     lst.append( statistics.mean(counts[:min(n, 10)]))
 
     lst.append( statistics.mean(counts[: max(n//20, 1) ]))
     lst.append( statistics.mean(counts[: max(n//10, 1) ]))
 
-    lst.append( count([x for x in lst if x >= 5]) )
-    lst.append( count([x for x in lst if x >= 10]) )
+    lst.append( len([x for x in counts if x >= 5]) )
+    lst.append( len([x for x in counts if x >= 10]) )
 
     return lst
 
@@ -46,7 +48,7 @@ def construct_dataframe(titles):
 
 
 with open('../data/article_titles_all.pkl', 'rb') as f:
-    titles = pickle.load(f)
+    class_lists  = pickle.load(f)
 titles = [item for sublist in class_lists for item in sublist]
 
 with open('../data/revision_dictionary_all.pkl', 'rb') as f:
