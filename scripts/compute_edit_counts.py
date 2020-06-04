@@ -20,29 +20,35 @@ def get_edit_count_list(title):
 
 def construct_row(title):
 
-    ["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
+    #["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
     counts = get_edit_count_list(title)
     lst = [title,]
 
     n = len(counts)
 
-    lst.append( statistics.mean(counts[:min(n, 8)]))
-    lst.append( statistics.mean(counts[:min(n, 12)]))
-    lst.append( statistics.mean(counts[:min(n, 15)]))
+    for i in range(1, 16):
+        lst.append( statistics.mean(counts[:min(n, i)]))
+
+    #lst.append( statistics.mean(counts[:min(n, 12)]))
+    #lst.append( statistics.mean(counts[:min(n, 15)]))
 
     #lst.append( statistics.mean(counts[: max(n//20, 1) ]))
     #lst.append( statistics.mean(counts[: max(n//10, 1) ]))
 
-    lst.append( len([x for x in counts if x >= 2]) )
-    lst.append( len([x for x in counts if x >= 4]) )
-    lst.append( len([x for x in counts if x >= 7]) )
+    for i in range(2, 16):
+        lst.append( len([x for x in counts if x >= i]) )
+    
+    #lst.append( len([x for x in counts if x >= 4]) )
+    #lst.append( len([x for x in counts if x >= 7]) )
 
     return lst
 
 def construct_dataframe(titles):
 
     #cols = ["T5 Avg Count", "T10 Avg Count", "T5% Avg Count", "T10% Avg Count", "Count>5", "Count>10"]
-    cols = ["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
+    #cols = ["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
+    cols = ["T{} Avg Count".format(i) for i in range(1, 16)] + ["Count>i".format(i) for i in range(2, 16)]
+    
     row_lst = []
     for i, title in enumerate(titles):
         print(i, title)
