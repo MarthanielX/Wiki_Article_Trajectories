@@ -2,6 +2,7 @@ import pandas as pd
 import pickle
 import math
 import statistics
+import networkx as nx
 
 def get_betweenness_list(title):
     g = graph_dict[title].to_undirected()
@@ -10,9 +11,9 @@ def get_betweenness_list(title):
 def construct_row(title):
 
     #["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
-    values = get_edit_count_list(title)
+    counts = get_betweenness_list(title)
     lst = [title,]
-    n = len(values)
+    n = len(counts)
 
     # Top i betweenness
     for i in range(1, 5):
@@ -34,11 +35,11 @@ def construct_row(title):
     return lst
 
 def construct_dataframe(titles):
-    cols = ["T{i} Avg Bwn".format(i) for i in range(1, 5)]
-    cols += ["T{i} Avg Bwn".format(i) for i in range(5, 30, 5)]
-    cols += ["T{i} Pct Avg Bwn".format(i) for i in range(1, 5)]
-    cols += ["T{i} Pct Avg Bwn".format(i) for i in range(5, 55, 5)]
-    cols += ["Count Bwn > i/100".format(i) for i in range(5, 55, 5)]
+    cols = ["T{} Avg Bwn".format(i) for i in range(1, 5)]
+    cols += ["T{} Avg Bwn".format(i) for i in range(5, 30, 5)]
+    cols += ["T{} Pct Avg Bwn".format(i) for i in range(1, 5)]
+    cols += ["T{} Pct Avg Bwn".format(i) for i in range(5, 55, 5)]
+    cols += ["Count Bwn > {}/100".format(i) for i in range(5, 55, 5)]
 
     row_lst = []
     for i, title in enumerate(titles):
