@@ -13,6 +13,7 @@ import json
 import matplotlib.pyplot as plt
 import statistics
 
+from operator import itemgetter
 import pandas as pd
 import pickle
 import math
@@ -50,6 +51,36 @@ def average_betweenness(g, weighted=False):
   if (weighted):
     w = "length"
   return statistics.mean(nx.networkx.algorithms.centrality.betweenness_centrality(g, weight=w).values())
+
+def unexpectedBrokers(G, aggregator='median'):
+  # for G in G_list:
+  degree_dict = dict(G.degree(G.nodes()))
+  sorted_degree = sorted(degree_dict.items(), key=itemgetter(1), reverse=True)
+  top_degree = [a[0] for a in sorted_degree[:max(5, int(len(sorted_degree)/50))]]
+  nx.set_node_attributes(G, degree_dict, 'degree')
+
+  betweenness_dict = nx.betweenness_centrality(G) # Run betweenness centrality
+  #eigenvector_dict = nx.eigenvector_centrality(G) # Run eigenvector centrality
+  # Assign each to an attribute in the network
+  nx.set_node_attributes(G, betweenness_dict, 'betweenness')
+  # nx.set_node_attributes(G, eigenvector_dict, 'eigenvector')
+  # First get the top 20 nodes by betweenness as a list
+  sorted_betweenness = sorted(betweenness_dict.items(), key=itemgetter(1), reverse=True)
+  top_betweenness = sorted_betweenness[:max(5, int(len(sorted_betweenness)/50))]
+
+  brokers = []
+  # Then find and print their degree
+  for tb in top_betweenness: # Loop through top_betweenness
+    degree = degree_dict[tb[0]] # Use degree_dict to access a node's degree
+    if tb[0] not in top_degree:
+      print("Name:", tb[0], "| Betweenness Centrality:", tb[1], "| Degree:", degree)
+      brokers.append((tb[1], degree))
+  
+  if aggregator == "median":
+    return statistics.median([elm[0] for elm in brokers])
+  elif aggregator == "exp":
+    return statistics.mean([elm[0] ** elm[1] for elm in brokers])
+  return brokers
 
 """ Network Stats 2 """
 density = nx.classes.function.density
@@ -90,7 +121,7 @@ node_connectivity = nx.algorithms.connectivity.connectivity.node_connectivity
 # this stat admits directed graphs but not edge weights
 edge_connectivity = nx.algorithms.connectivity.connectivity.edge_connectivity
 
-"""# Data Frame Constrution"""
+"""# Data Frame Construction"""
 
 def get_log_weighted_graph(input_graph, directed=True):
   if (directed):

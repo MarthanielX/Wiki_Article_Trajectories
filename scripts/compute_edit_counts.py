@@ -18,27 +18,71 @@ def get_edit_count_list(title):
     lst.sort(reverse=True)
     return  lst
 
+def get_edit_size_list(title, variant='default'):
+    revisions = revision_dict[title]
+    sizes = {revisions[-1]['user']: revisions[-1]['size']}
+
+    for i in range(len(revisions[:-1])):
+        edit_size = revisions[i]['size'] - revisions[i+1]['size']
+        if revisions[i]['user'] in sizes:
+            if variant == 'default':
+                sizes[ revisions[i]['user'] ] += edit_size
+            if variant == 'added':
+                sizes[ revisions[i]['user'] ] += edit_size if edit_size > 0 else 0
+            if variant == 'removed':
+                sizes[ revisions[i]['user'] ] += edit_size if edit_size < 0 else 0
+        else:
+            if variant == 'default':
+                sizes[ revisions[i]['user'] ] = edit_size
+            if variant == 'added':
+                sizes[ revisions[i]['user'] ] = edit_size if edit_size > 0 else 0
+            if variant == 'removed':
+                sizes[ revisions[i]['user'] ] = edit_size if edit_size < 0 else 0
+
+    lst = list(sizes.values())
+    lst.sort(reverse=True)
+
+    return lst
+
 def construct_row(title):
 
-    ["T5 Avg Count", "T10 Avg Count", "T5% Avg Count", "T10% Avg Count", "Count>5", "Count>10"]
-    counts = get_edit_count_list(title)
+    #["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
+    
+    # counts = get_edit_count_list(title)
+    # lst = [title,]
+
+    sizes = get_edit_size_list(title)
     lst = [title,]
 
-    n = len(counts)
-    lst.append( statistics.mean(counts[:min(n, 5)]))
-    lst.append( statistics.mean(counts[:min(n, 10)]))
+    # n = len(counts)
+    n = len(sizes)
 
-    lst.append( statistics.mean(counts[: max(n//20, 1) ]))
-    lst.append( statistics.mean(counts[: max(n//10, 1) ]))
+    for i in range(1, 16):
+        # lst.append( statistics.mean(counts[:min(n, i)]))
+        lst.append( statistics.mean(sizes[:min(n, i)]))
 
-    lst.append( len([x for x in counts if x >= 5]) )
-    lst.append( len([x for x in counts if x >= 10]) )
+    #lst.append( statistics.mean(counts[:min(n, 12)]))
+    #lst.append( statistics.mean(counts[:min(n, 15)]))
+
+    #lst.append( statistics.mean(counts[: max(n//20, 1) ]))
+    #lst.append( statistics.mean(counts[: max(n//10, 1) ]))
+
+    # for i in range(2, 16):
+        # lst.append( len([x for x in counts if x >= i]) )
+        # lst.append( len([x for x in sizes if x >= i]) )
+    
+    #lst.append( len([x for x in counts if x >= 4]) )
+    #lst.append( len([x for x in counts if x >= 7]) )
 
     return lst
 
 def construct_dataframe(titles):
 
-    cols = ["T5 Avg Count", "T10 Avg Count", "T5% Avg Count", "T10% Avg Count", "Count>5", "Count>10"]
+    #cols = ["T5 Avg Count", "T10 Avg Count", "T5% Avg Count", "T10% Avg Count", "Count>5", "Count>10"]
+    #cols = ["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
+    # cols = ["T{} Avg Count".format(i) for i in range(1, 16)] + ["Count>i".format(i) for i in range(2, 16)]
+    cols = ["T{} Avg Edit Size".format(i) for i in range(1, 16)] #+ ["Edit Size>i".format(i) for i in range(2, 16)]
+    
     row_lst = []
     for i, title in enumerate(titles):
         print(i, title)
@@ -56,5 +100,5 @@ with open('../data/revision_dictionary_all.pkl', 'rb') as f:
 
 df = construct_dataframe(titles)
 
-with open('../data/df_edit_count_stats.pkl', 'wb') as f:
+with open('../data/df_edit_size_stats2.pkl', 'wb') as f:
     pickle.dump(df, f)
