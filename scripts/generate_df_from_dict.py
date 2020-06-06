@@ -174,10 +174,10 @@ def construct_dataframe(article_titles, stat_names, directed, weighted):
 
 """ Main Method Section """
    
-with open('../data/graph_dictionary_all.pkl', 'rb') as f:
+with open('../../../shared/data/graph_dictionary_all.pkl', 'rb') as f:
  graph_dict = pickle.load(f)
 
-with open('../data/article_titles_all.pkl', 'rb') as f:
+with open('../../../shared/data/article_titles_all.pkl', 'rb') as f:
  class_lists = pickle.load(f)
 
 stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness']
@@ -191,6 +191,7 @@ directed = False
 weighted = ["log", "n", "sqrt"]
 
 for weight in weighted:
+  print(weight)
   df = construct_dataframe(titles, weighted_stats1, directed, weight)
   with open('../data/df_{}_weighted_stats_.pkl'.format(weight), 'wb') as f:
     pickle.dump(df, f)
