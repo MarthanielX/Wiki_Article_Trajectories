@@ -210,10 +210,10 @@ def construct_dataframe(article_titles, stat_names, directed, weighted):
 
 """ Main Method Section """
    
-with open('../data/graph_dictionary_all.pkl', 'rb') as f:
+with open('../../../shared/data/graph_dictionary_all.pkl', 'rb') as f:
  graph_dict = pickle.load(f)
 
-with open('../data/article_titles_all.pkl', 'rb') as f:
+with open('../../../shared/data/article_titles_all.pkl', 'rb') as f:
  class_lists = pickle.load(f)
 
 stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness']

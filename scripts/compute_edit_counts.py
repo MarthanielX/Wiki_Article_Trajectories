@@ -91,10 +91,12 @@ def construct_dataframe(titles):
     return pd.DataFrame(row_lst, columns = ['title', *cols] ).set_index('title')
 
 
+#with open('../../../shared/data/article_titles_all.pkl', 'rb') as f:
 with open('../data/article_titles_all.pkl', 'rb') as f:
     class_lists  = pickle.load(f)
 titles = [item for sublist in class_lists for item in sublist]
 
+#with open('../../../shared/data/revision_dictionary_all.pkl', 'rb') as f:
 with open('../data/revision_dictionary_all.pkl', 'rb') as f:
     revision_dict = pickle.load(f)
 
