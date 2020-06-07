@@ -40,7 +40,7 @@ def get_unexpected_betweenness(g):
 
 
 def construct_row(title):
-    graph = graph_dict(title)
+    graph = graph_dict[title]
     brokers = get_unexpected_betweenness(graph)
     lst = [title,]
 
