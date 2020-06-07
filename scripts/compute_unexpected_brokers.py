@@ -40,16 +40,10 @@ def get_unexpected_betweenness(g):
 
 
 def construct_row(title):
-
-    #["T8 Avg Count", "T12 Avg Count", "T15 Avg Count", "Count>2", "Count>4", "Count>7"]
-    
-    # counts = get_edit_count_list(title)
-    # lst = [title,]
-
-    brokers = get_unexpected_betweenness(title)
+    graph = graph_dict(title)
+    brokers = get_unexpected_betweenness(graph)
     lst = [title,]
 
-    # n = len(counts)
     n = len(brokers)
 
     for i in range(1, 16):
@@ -74,9 +68,9 @@ with open('../../../shared/data/article_titles_all.pkl', 'rb') as f:
     class_lists  = pickle.load(f)
 titles = [item for sublist in class_lists for item in sublist]
 
-with open('../../../shared/data/revision_dictionary_all.pkl', 'rb') as f:
-#with open('../data/revision_dictionary_all.pkl', 'rb') as f:
-    revision_dict = pickle.load(f)
+with open('../../../shared/data/graph_dictionary_all.pkl', 'rb') as f:
+# with open('../data/graph_dictionary_all.pkl', 'rb') as f:
+ graph_dict = pickle.load(f)
 
 df = construct_dataframe(titles)
 
