@@ -52,17 +52,17 @@ def average_betweenness(g, weighted=False):
     w = "length"
   return statistics.mean(nx.networkx.algorithms.centrality.betweenness_centrality(g, weight=w).values())
 
-def unexpectedBrokers(G, aggregator='median'):
+def unexpected_betweenness(g, aggregator='median'):
   # for G in G_list:
-  degree_dict = dict(G.degree(G.nodes()))
+  degree_dict = dict(g.degree(g.nodes()))
   sorted_degree = sorted(degree_dict.items(), key=itemgetter(1), reverse=True)
   top_degree = [a[0] for a in sorted_degree[:max(5, int(len(sorted_degree)/50))]]
-  nx.set_node_attributes(G, degree_dict, 'degree')
+  nx.set_node_attributes(g, degree_dict, 'degree')
 
-  betweenness_dict = nx.betweenness_centrality(G) # Run betweenness centrality
+  betweenness_dict = nx.betweenness_centrality(g) # Run betweenness centrality
   #eigenvector_dict = nx.eigenvector_centrality(G) # Run eigenvector centrality
   # Assign each to an attribute in the network
-  nx.set_node_attributes(G, betweenness_dict, 'betweenness')
+  nx.set_node_attributes(g, betweenness_dict, 'betweenness')
   # nx.set_node_attributes(G, eigenvector_dict, 'eigenvector')
   # First get the top 20 nodes by betweenness as a list
   sorted_betweenness = sorted(betweenness_dict.items(), key=itemgetter(1), reverse=True)
@@ -76,10 +76,14 @@ def unexpectedBrokers(G, aggregator='median'):
       print("Name:", tb[0], "| Betweenness Centrality:", tb[1], "| Degree:", degree)
       brokers.append((tb[1], degree))
   
+  # if not brokers:
+
   if aggregator == "median":
-    return statistics.median([elm[0] for elm in brokers])
+    return statistics.median([elm[0] for elm in brokers]) if brokers else 0
+  elif aggregator == "mean":
+    return statistics.mean([elm[0] for elm in brokers]) if brokers else 0
   elif aggregator == "exp":
-    return statistics.mean([elm[0] ** elm[1] for elm in brokers])
+    return statistics.mean([elm[0] ** elm[1] for elm in brokers]) if brokers else 0
   return brokers
 
 """ Network Stats 2 """
@@ -175,6 +179,7 @@ stat_functions = {
   'avg eccentricity' : average_eccentricity,
   'm' : number_of_edges,
   'global clustering' : global_clustering,
+  'unexpected betweenness' : unexpected_betweenness,
   'smallworld omega': smallworld_omega,
   'smallworld sigma': smallworld_sigma,
   'node connectivity': node_connectivity,
@@ -212,7 +217,7 @@ with open('../data/article_titles_all.pkl', 'rb') as f:
  class_lists = pickle.load(f)
 
 stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness']
-stats2 = ['density', 'radius', 'avg eccentricity', 'm', 'global clustering']
+stats2 = ['density', 'radius', 'avg eccentricity', 'm', 'global clustering', 'unexpected betweennness']
 stats_smallworld = ['smallworld omega', 'smallworld sigma']
 stats_connectivity = ['node connectivity', 'edge connectivity']
 weighted_stats1 = ['diameter', 'closeness', 'avg clustering', 'betweenness', 'radius', 'avg eccentricity']
@@ -221,7 +226,9 @@ titles = [item for sublist in class_lists for item in sublist]
 directed = False
 weighted = ["log", "n", "sqrt"]
 
-for weight in weighted:
-  df = construct_dataframe(titles, weighted_stats1, directed, weight)
-  with open('../data/df_{}_weighted_stats_.pkl'.format(weight), 'wb') as f:
-    pickle.dump(df, f)
+df = construct_dataframe(titles, ['unexpected betweenness'], directed, False)
+
+# for weight in weighted:
+#   df = construct_dataframe(titles, weighted_stats1, directed, weight)
+#   with open('../data/df_{}_weighted_stats_.pkl'.format(weight), 'wb') as f:
+#     pickle.dump(df, f)
