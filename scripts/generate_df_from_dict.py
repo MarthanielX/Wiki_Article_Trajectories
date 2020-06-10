@@ -52,7 +52,7 @@ def average_betweenness(g, weighted=False):
     w = "length"
   return statistics.mean(nx.networkx.algorithms.centrality.betweenness_centrality(g, weight=w).values())
 
-def unexpected_betweenness(g, aggregator='median'):
+def unexpected_betweenness(g):
   # for G in G_list:
   degree_dict = dict(g.degree(g.nodes()))
   sorted_degree = sorted(degree_dict.items(), key=itemgetter(1), reverse=True)
@@ -76,15 +76,7 @@ def unexpected_betweenness(g, aggregator='median'):
       print("Name:", tb[0], "| Betweenness Centrality:", tb[1], "| Degree:", degree)
       brokers.append((tb[1], degree))
   
-  # if not brokers:
-
-  if aggregator == "median":
-    return statistics.median([elm[0] for elm in brokers]) if brokers else 0
-  elif aggregator == "mean":
-    return statistics.mean([elm[0] for elm in brokers]) if brokers else 0
-  elif aggregator == "exp":
-    return statistics.mean([elm[0] ** elm[1] for elm in brokers]) if brokers else 0
-  return brokers
+  return len(brokers)
 
 """ Network Stats 2 """
 density = nx.classes.function.density
